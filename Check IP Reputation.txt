@@ -1,0 +1,28 @@
+			🧾 Step 4: Check IP Reputation (the hidden issue)
+Sometimes dedicated IPs are new or used by other users previously — banks detect this.
+
+Do this:
+
+Copy your current IP (from whatismyipaddress.com)
+Visit https://scamalytics.com/ip
+Check “Fraud Score”
+✅ Score under 50 → Safe for banking
+❌ Over 50 → SBT Bank may auto-block it → Contact NordVPN support and request a replacement U.S. Dedicated IP (mention “banking access blocked”)
+🧱 Step 5: Test a Stable DNS Tunnel
+To test your reliability: Open Command Prompt → run:
+
+bash
+
+ipconfig /flushdns
+ping sbtpg.com
+tracert sbtpg.com
+All hops should show us.nordvpn.com domains and U.S. routes only.
+❌ If there’s a .my route (Malaysia) → your adapter priority order is wrong.
+To fix:
+
+bash
+
+netsh interface ipv4 show interfaces
+netsh interface ipv4 set interface <index_of_NordVPN> metric=1
+			
+			
