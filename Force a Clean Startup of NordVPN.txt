@@ -1,0 +1,117 @@
+🧩 1️⃣ Force a Clean Startup (Fix Corrupted Config Cache)
+Quit NordVPN completely (right‑click icon in taskbar → Exit).
+In PowerShell (as Administrator) run:
+powershell
+
+netsh winsock reset
+ipconfig /flushdns
+Restart your computer.
+After login, don’t launch anything yet → open NordVPN first.
+If it still pin‑wheels beyond 15 seconds, go to Step 2.
+
+⚙️ 2️⃣ Switch to a Direct OpenVPN Connection
+Sometimes the NordLynx (WireGuard) service fails to authenticate from certain international networks.
+
+Open NordVPN → ⚙ Settings → VPN Protocol
+Change to OpenVPN (TCP)
+Close the Settings window → try connecting to:
+United States → Atlanta #xxxx
+or United States → New York #xxxx
+If this connects, you can later revert to Auto mode.
+
+🔒 3️⃣ Check Firewall Permissions
+The previous PowerShell route or Norton 360 could still be firewall‑blocking NordVPN’s background service.
+
+Open Windows Security → Firewall & network protection → Allow an app through firewall → make sure these are ✅ checked for Private and Public networks:
+
+code
+
+NordVPN.exe
+NordVPNService.exe
+NordLynx Windows Service
+If any are missing, click Change settings → Allow another app → Browse to C:\Program Files\NordVPN and add them.
+
+☁️ 4️⃣ Verify DNS Resolution to NordVPN Cloud (Their Login Server)
+In PowerShell:
+
+powershell
+
+nslookup nordvpn.com
+If it fails (“server can’t find domain”), your DNS settings aren’t propagating.
+
+Fix:
+
+powershell
+
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("8.8.8.8","8.8.4.4")
+ipconfig /flushdns
+Then retry NordVPN.
+
+🧰 5️⃣ Advanced Reset (Only if Still Spinning)
+If everything still fails:
+
+Uninstall NordVPN via Control Panel.
+Delete leftover folders:
+code
+
+C:\Program Files\NordVPN
+C:\Program Files (x86)\NordVPN
+C:\ProgramData\NordVPN
+Empty Recycle Bin.
+Reinstall with the latest installer from https://nordvpn.com/download.
+✅ After Successful Connection
+Once you reconnect:
+
+
+🇺🇸 Step 1 – Verify Your US Connection
+Run this PowerShell check once more:
+
+powershell
+
+(Invoke-WebRequest -UseBasicParsing -Uri "https://ipapi.co/json/").Content
+Confirm that it shows:
+
+code
+
+"country_name": "United States"
+"region": "Georgia"
+If yes, you’re good — that’s your live U.S. location.
+
+⚙️ Step 2 – Lock Your Auto‑Connection
+Inside the NordVPN app → Settings > Auto‑connect: 1. Turn it ON
+2. Under “Choose VPN server,” select United States – Atlanta
+3. Enable “Auto‑connect on Wi‑Fi and Ethernet”
+
+That ensures every time you start Windows or reconnect to the internet, it automatically tunnels through Atlanta.
+
+🧩 Step 3 – Enable Built‑in Kill Switch (Only the App Version)
+Go to: Settings > Kill Switch
+
+✅ Turn ON Internet Kill Switch (to block all traffic if VPN drops)
+🚫 Don’t add manual PowerShell kill‑switch commands again — the app handles this safely.
+🧱 Step 4 – Stabilize Your DNS to U.S. Resolvers
+Still in PowerShell (Administrator):
+
+powershell
+
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("103.86.96.100","103.86.99.100")
+ipconfig /flushdns
+(Those are NordVPN’s verified U.S. DNS servers.)
+
+This ensures all domain lookups resolve through U.S. infrastructure even if the VPN momentarily resets.
+
+🌍 Step 5 – Confirm Startup Order
+1. Open Task Manager → Startup tab
+2. Ensure NordVPN is set to Enabled
+3. (Optional) If you use Norton 360, turn its VPN module off (keep antivirus on).
+
+Now, NordVPN will initialize first each boot and re‑establish your U.S. route before any other app tries to connect.
+
+🕵️ Step 6 – Add a Quick Monitor Check (Once Weekly)
+To confirm you still appear in the U.S.:
+
+powershell
+
+(Invoke-WebRequest -UseBasicParsing -Uri "https://ipapi.co/country_name/").Content
+If it returns anything other than “United States,” reconnect to your Atlanta server manually.
+
